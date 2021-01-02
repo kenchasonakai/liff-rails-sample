@@ -16,6 +16,11 @@ window.addEventListener('load', () => {
     liff.getProfile()
     .then(profile => {
       const body = Object.keys(profile).map((key)=>key+"="+encodeURIComponent(profile[key])).join("&");
+      console.log(profile.displayName)
+      const user_name_display = document.getElementById("user_name")
+      const user_name = document.createTextNode(profile.displayName)
+      console.log(user_name)
+      user_name_display.append(user_name)
       let request = new Request('/users', {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',

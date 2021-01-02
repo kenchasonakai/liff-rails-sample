@@ -32,6 +32,7 @@ group :development, :test do
   gem 'pry-byebug'
   gem 'rails-erd'
   gem 'sqlite3', '~> 1.4'
+  gem 'rspec-rails'
 end
 
 group :development do
