@@ -1,5 +1,11 @@
 window.addEventListener('load', () => {
   const logout_button = document.getElementById("logout_button")
+  let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  const Example = (jsonObj) => {
+    const data = jsonObj;
+    console.log(data.msg);
+  }
+
   liff.init({
     liffId: "1655381466-modX62Ob"
   })
@@ -7,16 +13,29 @@ window.addEventListener('load', () => {
     if (!liff.isLoggedIn()) {
       liff.login();
     }
-    // Start to use liff's api
-    const idToken = liff.getIDToken();
-    console.log(idToken)
     liff.getProfile()
     .then(profile => {
-    const name = profile.displayName
-      console.log(name)
+      const body = Object.keys(profile).map((key)=>key+"="+encodeURIComponent(profile[key])).join("&");
+      let request = new Request('/users', {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+          'X-CSRF-Token': token
+        },
+        method: 'POST',
+        body: body
+      });
+      fetch(request).then((response) => {
+        return response.json()
+      })
+      .then((result) => {
+        Example(result)
+      })
+      .catch((err) => {
+        console.log('error', err);
+      })
     })
     .catch((err) => {
-     console.log('error', err);
+      console.log('error', err);
     });
   })
   .catch((err) => {
