@@ -5,6 +5,7 @@ window.addEventListener('load', () => {
   const get_location_button = document.getElementById("get_location_button")
   const latitude = document.getElementById("latitude")
   const longitude = document.getElementById("longitude")
+  const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
   const get_current_location_success = (data) => {
     let crd = data.coords
@@ -15,12 +16,23 @@ window.addEventListener('load', () => {
   }
 
   const error = () => {
-    console.log("位置情報の取得に失敗しました")
+    console.log("通信に失敗しました")
   }
 
-  get_location_button.addEventListener('click', () => {
-    navigator.geolocation.getCurrentPosition(get_current_location_success, error)
-  }, false)
+  const logRecord_success = () => {
+    liff.sendMessages([
+      {
+      type: 'text',
+      text: 'ログの登録ができました！'
+      }
+    ])
+    .then(() => {
+      liff.closeWindow()
+    })
+    .catch((err) => {
+      console.log('error', err);
+    });
+  }
 
   const set_query = () => {
     let name = document.getElementById("name").value;
@@ -41,6 +53,25 @@ window.addEventListener('load', () => {
     return array.join("")
   }
 
+  const logRecord = (e) => {
+    const element = e.target
+    const elementName = element.innerHTML
+    const elementId = element.dataset.grnvId
+    const obj ={ name: elementName, grnvId: elementId }
+    const body = Object.keys(obj).map((key)=>key+"="+encodeURIComponent(obj[key])).join("&");
+    const request = new Request('/logs', {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+          'X-CSRF-Token': token
+        },
+        method: 'POST',
+        body: body
+    });
+    if (window.confirm(`${elementName}でよろしいですか？`)) {
+      fetch(request).then(logRecord_success, error)
+    }
+  }
+
   const grnv = () => {
     var result = document.getElementById("result");
     result.innerHTML = ""
@@ -50,14 +81,24 @@ window.addEventListener('load', () => {
     .then(response => response.json())
     .then(data => {
       for(element of data.rest){
-        var p = document.createElement("p")
-        var newContent = document.createTextNode(element.name);
-        p.appendChild(newContent)
+        let p = document.createElement("p")
+        let shopName = document.createTextNode(element.name);
+        p.setAttribute("data-grnv-id", element.id)
+        p.setAttribute("class", "result-list")
+        p.onclick = logRecord
+        p.appendChild(shopName)
         result.appendChild(p)
       }
     })
   }
+
+
   navigator.geolocation.getCurrentPosition(get_current_location_success, error)
+
+  get_location_button.addEventListener('click', () => {
+    navigator.geolocation.getCurrentPosition(get_current_location_success, error)
+  }, false)
+
   submit_button.addEventListener('click', () => {
     grnv()
   }, false);

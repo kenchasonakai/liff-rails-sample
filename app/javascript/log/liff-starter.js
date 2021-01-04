@@ -1,6 +1,6 @@
 window.addEventListener('load', () => {
   const logout_button = document.getElementById("logout_button")
-  let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
   const Example = (jsonObj) => {
     const data = jsonObj;
     console.log(data.msg);
