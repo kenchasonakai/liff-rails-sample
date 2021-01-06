@@ -11,4 +11,9 @@ html
     = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
     script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"
   body
+    header
+      p
+        =link_to "home", new_log_path
+      p
+        =link_to "index", logs_path
     = yield

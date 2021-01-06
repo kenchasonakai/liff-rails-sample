@@ -20,18 +20,20 @@ window.addEventListener('load', () => {
   }
 
   const logRecord_success = () => {
-    liff.sendMessages([
-      {
-      type: 'text',
-      text: 'ログの登録ができました！'
-      }
-    ])
-    .then(() => {
-      liff.closeWindow()
-    })
-    .catch((err) => {
-      console.log('error', err);
-    });
+    if(liff.isInClient()){
+      liff.sendMessages([
+        {
+        type: 'text',
+        text: 'ログの登録ができました！'
+        }
+      ])
+      .then(() => {
+        liff.closeWindow()
+      })
+      .catch((err) => {
+        console.log('error', err);
+      });
+    }
   }
 
   const set_query = () => {
@@ -54,10 +56,18 @@ window.addEventListener('load', () => {
   }
 
   const logRecord = (e) => {
-    const element = e.target
-    const elementName = element.innerHTML
-    const elementId = element.dataset.grnvId
-    const obj ={ name: elementName, grnvId: elementId }
+    let element = e.target
+    let shopName = element.dataset.grnvName
+    let shopId = element.dataset.grnvId
+    let shopUrl = element.dataset.grnvUrl
+    let shopImage = element.dataset.grnvImage
+    let shopAddress = element.dataset.grnvAddress
+    let shopTel = element.dataset.grnvTel
+    let shopOpentime = element.dataset.grnvOpentime
+    let shopHoliday= element.dataset.grnvHoliday
+
+    const obj ={ name: shopName, grnvId: shopId, grnvUrl: shopUrl, grnvImage: shopImage, grnvAddress: shopAddress, grnvTel: shopTel, grnvOpentime: shopOpentime, grnvHoliday: shopHoliday }
+    console.log(obj)
     const body = Object.keys(obj).map((key)=>key+"="+encodeURIComponent(obj[key])).join("&");
     const request = new Request('/logs', {
         headers: {
@@ -67,7 +77,7 @@ window.addEventListener('load', () => {
         method: 'POST',
         body: body
     });
-    if (window.confirm(`${elementName}でよろしいですか？`)) {
+    if (window.confirm(`${shopName}でよろしいですか？`)) {
       fetch(request).then(logRecord_success, error)
     }
   }
@@ -81,12 +91,27 @@ window.addEventListener('load', () => {
     .then(response => response.json())
     .then(data => {
       for(element of data.rest){
+        let shopId = element.id
+        let shopName = element.name
+        let shopUrl = element.url
+        let shopImage = element.image_url.shop_image1
+        let shopAddress = element.address
+        let shopTel = element.tel
+        let shopOpentime = element.opentime
+        let shopHoliday= element.holiday
         let p = document.createElement("p")
-        let shopName = document.createTextNode(element.name);
-        p.setAttribute("data-grnv-id", element.id)
+        let name = document.createTextNode(shopName);
+        p.setAttribute("data-grnv-id", shopId)
+        p.setAttribute("data-grnv-name", shopName)
+        p.setAttribute("data-grnv-url", shopUrl)
+        p.setAttribute("data-grnv-image", shopImage)
+        p.setAttribute("data-grnv-address", shopAddress)
+        p.setAttribute("data-grnv-tel", shopTel)
+        p.setAttribute("data-grnv-opentime", shopOpentime)
+        p.setAttribute("data-grnv-holiday", shopHoliday)
         p.setAttribute("class", "result-list")
         p.onclick = logRecord
-        p.appendChild(shopName)
+        p.appendChild(name)
         result.appendChild(p)
       }
     })
