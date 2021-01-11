@@ -1,0 +1,2 @@
+class Muni < ApplicationRecord
+end

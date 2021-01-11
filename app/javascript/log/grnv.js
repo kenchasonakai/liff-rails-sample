@@ -5,14 +5,39 @@ window.addEventListener('load', () => {
   const get_location_button = document.getElementById("get_location_button")
   const latitude = document.getElementById("latitude")
   const longitude = document.getElementById("longitude")
+  const address = document.getElementById("address")
   const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
   const get_current_location_success = (data) => {
-    let crd = data.coords
-    let get_latitude = crd.latitude;
-    let get_longitude = crd.longitude;
-    latitude.innerHTML = `緯度${get_latitude}`
-    longitude.innerHTML = `経度${get_longitude}`
+    if(data){
+      let crd = data.coords
+      let get_latitude = crd.latitude;
+      let get_longitude = crd.longitude;
+      latitude.innerHTML = `緯度${get_latitude}`
+      longitude.innerHTML = `経度${get_longitude}`
+      let request = new Request(`https://mreversegeocoder.gsi.go.jp/reverse-geocoder/LonLatToAddress?lat=${get_latitude}&lon=${get_longitude}`)
+      fetch(request)
+      .then(response => response.json())
+      .then(data => {
+        let muniCd = data.results.muniCd
+        let lv01Nm = data.results.lv01Nm
+        let obj ={ muniCd: muniCd, lv01Nm: lv01Nm }
+        let body = Object.keys(obj).map((key)=>key+"="+encodeURIComponent(obj[key])).join("&");
+        let req = new Request('/logs/muni', {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+            'X-CSRF-Token': token
+          },
+          method: 'POST',
+          body: body
+        });
+        fetch(req)
+        .then(response => response.json())
+        .then(data => {
+          address.append(data.msg)
+        });
+      })
+    }
   }
 
   const error = () => {
@@ -33,6 +58,9 @@ window.addEventListener('load', () => {
       .catch((err) => {
         console.log('error', err);
       });
+    }
+    else {
+      window.location = '/logs'
     }
   }
 
@@ -77,7 +105,7 @@ window.addEventListener('load', () => {
         method: 'POST',
         body: body
     });
-    if (window.confirm(`${shopName}でよろしいですか？`)) {
+    if (window.confirm(`${shopName}で登録しますか？`)) {
       fetch(request).then(logRecord_success, error)
     }
   }
