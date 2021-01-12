@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 2021_01_10_084005) do
     t.string "user_id"
     t.string "grnv_bar_info_id"
     t.string "memo"
+    t.date "drank_on"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

@@ -4,6 +4,7 @@ class CreateLogs < ActiveRecord::Migration[6.0]
       t.string :user_id
       t.string :grnv_bar_info_id
       t.string :memo
+      t.date :drank_on
 
       t.timestamps
     end
