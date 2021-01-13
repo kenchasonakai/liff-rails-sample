@@ -1,20 +1,5 @@
 div
   p
-    |id:
-    = log.grnv_id
-  p
-    |date:
-    = log.created_at
-
-  p
-    |name:
-    = log.name
-  p
-    |opentime:
-    = log.opentime
-  p
-    |holiday:
-    = log.holiday
-  p
-    |tel:
-    = log.tel
+    = link_to log.drank_on, shops_logs_path(date: log.drank_on), method: :post, class: "shops", style: "display:block", remote: true, onclick: "open_dom(event)", data: { id: log.drank_on.to_s }
+  p.shops id=log.drank_on style="display:none"
+    |ukonpower

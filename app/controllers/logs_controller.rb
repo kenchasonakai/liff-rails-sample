@@ -1,6 +1,6 @@
 class LogsController < ApplicationController
   def index
-    @logs = Log.joins(:grnv_bar_info).select("logs.*, grnv_bar_infos.*").where(user_id: current_user.id)
+    @logs = Log.where(user_id: current_user.id).select("logs.drank_on").distinct
   end
   def new
     @log = Log.new
@@ -24,5 +24,9 @@ class LogsController < ApplicationController
     msg = "#{muni.muni_name}#{address}"
     puts msg
     render :json => { msg: msg }
+  end
+  def shops
+    date = params[:date]
+    @shops = Log.where(user_id: current_user.id, drank_on: date)
   end
 end

@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resources :logs do
     collection do
       post :muni
+      post :shops
     end
   end
   resources :users

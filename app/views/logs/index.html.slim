@@ -1,2 +1,13 @@
 h1 list_screen
 = render partial: "log", collection: @logs
+javascript:
+  const open_dom = (e) => {
+    let target = e.target
+    let id = target.dataset.id
+    let openDiv = document.getElementById(id)
+    if(openDiv.style.display === "none"){
+      openDiv.style.display = "block"
+    } else if(openDiv.style.display === "block"){
+      openDiv.style.display = "none"
+    }
+  }
